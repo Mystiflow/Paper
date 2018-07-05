@@ -1,0 +1,34 @@
+From 64d470eb0b1a044de12fffd3f9c89caf9c13faa4 Mon Sep 17 00:00:00 2001
+From: Mystiflow <mystiflow@gmail.com>
+Date: Thu, 5 Jul 2018 23:50:22 +0100
+Subject: [PATCH] Send nearby packets from world player list not server list
+
+
+diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
+index eaaa54ac..6202a63a 100644
+--- a/src/main/java/net/minecraft/server/PlayerList.java
++++ b/src/main/java/net/minecraft/server/PlayerList.java
+@@ -1239,8 +1239,9 @@ public abstract class PlayerList {
+     }
+ 
+     public void sendPacketNearby(@Nullable EntityHuman entityhuman, double d0, double d1, double d2, double d3, int i, Packet<?> packet) {
+-        for (int j = 0; j < this.players.size(); ++j) {
+-            EntityPlayer entityplayer = (EntityPlayer) this.players.get(j);
++        World world = entityhuman.world;
++        for (int j = 0; j < world.players.size(); ++j) {
++            EntityPlayer entityplayer = (EntityPlayer) world.players.get(j);
+ 
+             // CraftBukkit start - Test if player receiving packet can see the source of the packet
+             if (entityhuman != null && entityhuman instanceof EntityPlayer && !entityplayer.getBukkitEntity().canSee(((EntityPlayer) entityhuman).getBukkitEntity())) {
+@@ -1248,7 +1249,7 @@ public abstract class PlayerList {
+             }
+             // CraftBukkit end
+ 
+-            if (entityplayer != entityhuman && entityplayer.dimension == i) {
++            if (entityplayer != entityhuman) {
+                 double d4 = d0 - entityplayer.locX;
+                 double d5 = d1 - entityplayer.locY;
+                 double d6 = d2 - entityplayer.locZ;
+-- 
+2.18.0.rc2.windows.1
+
